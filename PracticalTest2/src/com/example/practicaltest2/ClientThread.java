@@ -15,31 +15,29 @@ public class ClientThread extends Thread {
 	private static final String tag = "MY_TEST2";
 	private LogPrinter lp = new LogPrinter(Log.DEBUG, tag);
 	
-	private String   address;
+	private String   op1;
+	private String   op2;
 	private int      port;
-	private String   city;
-	private String   informationType;
+	private String oper;
 	private TextView myTextView;
 	
 	private Socket   socket;
 	
 	public ClientThread(
-			String address,
-			int port,
-			String city,
-			String informationType,
-			TextView weatherForecastTextView) {
-		this.address                 = address;
-		this.port                    = port;
-		this.city                    = city;
-		this.informationType         = informationType;
-		this.myTextView = weatherForecastTextView;
+			String op1,
+			String op2,
+			String oper,
+			TextView dataTextView) {
+		this.op1                 = op1;
+		this.op2                    = op2;
+		this.oper                    = oper;
+		this.myTextView = dataTextView;
 	}
 	
 	@Override
 	public void run() {
 		try {
-			socket = new Socket(address, port);
+			socket = new Socket("127.0.0.1", 2525);
 			if (socket == null) {
 				lp.println("[CLIENT THREAD] Could not create socket!");
 			}
@@ -47,9 +45,8 @@ public class ClientThread extends Thread {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			PrintWriter    printWriter    = new PrintWriter(socket.getOutputStream(), true);
 			if (bufferedReader != null && printWriter != null) {
-				printWriter.println(city);
-				printWriter.flush();
-				printWriter.println(informationType);
+				String cmd = "" + oper + "," + op1 + "," + op2;
+				printWriter.println(cmd);
 				printWriter.flush();
 				String dataInformation;
 				while ((dataInformation = bufferedReader.readLine()) != null) {
@@ -58,7 +55,7 @@ public class ClientThread extends Thread {
 					myTextView.post(new Runnable() {
 						@Override
 						public void run() {
-							myTextView.append(finalizedDataInformation + "\n");
+							myTextView.setText(finalizedDataInformation);
 						}
 					});
 				}

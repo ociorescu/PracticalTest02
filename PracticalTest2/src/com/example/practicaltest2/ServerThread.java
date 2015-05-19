@@ -59,8 +59,8 @@ public class ServerThread extends Thread {
 				lp.println("[SERVER] Waiting for a connection...");
 				Socket socket = serverSocket.accept();
 				lp.println("[SERVER] A connection request was received from " + socket.getInetAddress() + ":" + socket.getLocalPort());
-				//CommunicationThread communicationThread = new CommunicationThread(this, socket);
-				//communicationThread.start();
+				CommunicationThread communicationThread = new CommunicationThread(this, socket);
+				communicationThread.start();
 			}			
 		} catch (IOException ioException) {
 			lp.println("An exception has occurred: " + ioException.getMessage());
